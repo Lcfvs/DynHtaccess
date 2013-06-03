@@ -1,0 +1,54 @@
+#Copyright 2013 Lcf.vs
+#Released under the MIT license
+#https://github.com/Lcfvs/DynHtaccess
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Creates/updates the subdomain redirection counter
+    SetEnvIf DH_SUB_COUNTER ^(1*)$ "DH_SUB_COUNTER=1$1"
+    SetEnvIf REDIRECT_DH_SUB_COUNTER ^(1*)$ "DH_SUB_COUNTER=1$1"
+
+    # Saves the HTTP URI
+    SetEnvIf Request_URI ^(.*)$ DH_HTTP_URI=$1
+    SetEnvIf REDIRECT_DH_HTTP_URI ^(.+)$ DH_HTTP_URI=$1
+
+    # Captures the HTTP status
+    SetEnvIf REDIRECT_STATUS (.*) DH_STATUS=$1
+    SetEnvIf REDIRECT_STATUS ^$ DH_STATUS=200
+    
+    # Defines the routes
+    SetEnvIf DH_HTTP_URI (.*) DH_FILE_URI=$1
+    SetEnvIf DH_STATUS 404 DH_FILE_URI=/system/http-error.php
+    SetEnvIf DH_HTTP_URI ^/$ DH_FILE_URI=/system/index.php
+    
+    # Detects a forbidden request
+    SetEnvIf DH_HTTP_URI ^/system/ DH_STATUS=404
+
+    # Redirects a not found request
+    RewriteCond %{ENV:DH_STATUS} 404 [OR]
+    RewriteCond %{DOCUMENT_ROOT}%{ENV:DH_DOMAIN_DIR}%{ENV:DH_FILE_URI} !-f
+    RewriteCond %{ENV:DH_ROOT_COUNTER}-%{ENV:DH_SUB_COUNTER} ^((11-1)|(-1))$
+    RewriteRule (.*) - [R=404,QSA]
+
+    # Redirects to the ErrorDocument generator
+    RewriteCond %{ENV:DH_STATUS} !200
+    RewriteCond %{ENV:DH_ROOT_COUNTER}-%{ENV:DH_SUB_COUNTER} ^((1111-11)|(-11))$
+    RewriteRule (.*) %{ENV:DH_DOMAIN_DIR}%{ENV:DH_FILE_URI} [L,QSA]
+
+    # Redirects a granted request
+    RewriteCond %{ENV:DH_STATUS} 200
+    RewriteCond %{ENV:DH_ROOT_COUNTER}-%{ENV:DH_SUB_COUNTER} ^((11-1)|-1)$
+    RewriteRule (.*) %{ENV:DH_DOMAIN_DIR}%{ENV:DH_FILE_URI} [L,QSA]
+
+    # Declares the (sub)domain ErrorDocument requests
+    ErrorDocument 301 /
+    ErrorDocument 400 /
+    ErrorDocument 401 /
+    ErrorDocument 403 /
+    ErrorDocument 404 /
+    ErrorDocument 408 /
+    ErrorDocument 500 /
+    ErrorDocument 502 /
+    ErrorDocument 503 /
+    ErrorDocument 504 /
+</IfModule>

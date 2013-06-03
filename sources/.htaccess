@@ -1,0 +1,27 @@
+#Copyright 2013 Lcf.vs
+#Released under the MIT license
+#https://github.com/Lcfvs/DynHtaccess
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Creates/updates the DOCUMENT_ROOT redirection counter
+    SetEnvIf REDIRECT_DH_ROOT_COUNTER ^(1*)$ "DH_ROOT_COUNTER=1$1"
+    
+    # Saves the subdomain redirection counter
+    SetEnvIf REDIRECT_DH_SUB_COUNTER (.*) "DH_SUB_COUNTER=$1"
+
+    # Selects the (sub)domain directory
+    SetEnvIf Host ^([a-z-\d]+)(?::\d+)?$ "DH_DOMAIN_DIR=/$1"
+    SetEnvIf Host ^([a-z-\d]+)\.([a-z-\d]+)(?::\d+)?$ "DH_DOMAIN_DIR=/$1_$2"
+    SetEnvIf Host ^([a-z-\d]+)\.([a-z-\d]+)\.([a-z-\d]+)(?::\d+)?$ "DH_DOMAIN_DIR=/$1_$2_$3"
+    SetEnvIf Host ^([a-z-\d]+)\.([a-z-\d]+)\.([a-z-\d]+)\.(?:[a-z-\d]+)(:\d+)?$ "DH_DOMAIN_DIR=/$1_$2_$3_$4"
+
+    # Saves the HTTP URI
+    SetEnvIf Request_URI ^(.*)$ DH_HTTP_URI=$1
+    SetEnvIf REDIRECT_DH_HTTP_URI ^(.+)$ DH_HTTP_URI=$1
+
+    # Redirects to the (sub)domain directory (if exists)
+    RewriteCond %{ENV:DH_ROOT_COUNTER} ^(1|111|((11)*(?!1)))$
+    RewriteCond %{DOCUMENT_ROOT}/%{ENV:DH_DOMAIN_DIR} -d
+    RewriteRule (.*) %{ENV:DH_DOMAIN_DIR}%{ENV:DH_HTTP_URI} [L,QSA]
+</IfModule>
