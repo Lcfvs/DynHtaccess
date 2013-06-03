@@ -32,7 +32,7 @@ For each of the two demos, copy the contents of /demos/DOCUMENT_ROOT_* directly 
 
 Beware of well delete the previous content, to obvious reasons of compatibility.
 
-Each of these demos is, by default, the home page that is accessible (eg : http://localhost/) and any file in the /resources subdirectory.
+Each of these demos is, by default, the home page that is accessible (eg : http://localhost/).
 
 For the second demo, you may need to rename the /localhost directory to match with your hostname.
 
