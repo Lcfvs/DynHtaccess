@@ -22,7 +22,7 @@ Put the /sources/.htaccess file in your DOCUMENT_ROOT.
 
 Put the /sources/localhost/.htaccess file in your DOCUMENT_ROOT/localhost/.
 
-(NB : replace "localhost" by your hostname)
+(NB : replace "localhost" by your hostname & replace all dots by underscores)
 
 
 Demos :
